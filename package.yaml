@@ -1,0 +1,57 @@
+name: musicd
+version: '0.1.0.0'
+category: Music
+author: Benjamin Fox
+maintainer: foxbenjaminfox@gmail.com
+copyright: 2019 Benjamin Fox
+license: GPL-3
+github: foxbenjaminfox/musicd
+tested-with: GHC==8.6.4
+extra-source-files:
+- README.md
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  dependencies:
+  - base >=4.7 && <5
+  - directory
+  - ekg
+  - filepath
+  - Glob
+  - megaparsec
+  - monad-logger
+  - random-shuffle
+  - typed-process
+executables:
+  musicd:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -with-rtsopts=-T
+    dependencies:
+    - base
+    - musicd
+    - directory
+    - hdaemonize
+    - optparse-applicative
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options: -Wall
+    dependencies:
+    - base
+    - musicd
+    - hspec
+    - QuickCheck
+dependencies:
+- classy-prelude
+default-extensions:
+- DuplicateRecordFields
+- LambdaCase
+- NoImplicitPrelude
+- OverloadedStrings
+- RecordWildCards

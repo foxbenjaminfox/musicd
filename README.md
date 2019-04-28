@@ -1,6 +1,6 @@
 # `musicd` - the music daemon
 
-[![Build Status](https://travis-ci.org/foxbenjaminfox/`musicd`.png)](https://travis-ci.org/foxbenjaminfox/`musicd`)
+[![Build Status](https://travis-ci.org/foxbenjaminfox/musicd.png)](https://travis-ci.org/foxbenjaminfox/musicd)
 
 `musicd` is a daemon for playing music, intended to serve as a replacement for GUI music players.
 

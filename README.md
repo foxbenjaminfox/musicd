@@ -7,16 +7,16 @@
 The core idea of `musicd` is simple: you give it a file which is a queue of music to play, and `musicd` plays them, one after the other, in the background. Each line in your playlist file specifies one or more files to play, either directly by filename, or using any of `musicd`'s several specification options.
 
 Each line can specify either:
-- A file to play
-- A glob pattern of files to play
-- A folder from which to randomly choose a given number of files to play
+- A file to play.
+- A glob pattern of files to play.
+- A folder from which to randomly choose a given number of files to play.
 - A folder to play files from indefinitely.
-- A term to play the top YouTube search result of
-- Another playlist file to include
+- A term to play the top YouTube search result of.
+- Another playlist file to include.
 
 To play music: open your playlist in your favorite editor and queue up what you want to play. `musicd` works best if you have your music in a filesystem hierarchy which matches how you want to organize your music.
 
-# Dependencies
+## Dependencies
 
 `musicd` depends on `sox` in order to play music, and `youtube-dl` if you want to use it to play music from youtube (an optional feature). You can install them both with apt:
 
@@ -36,7 +36,7 @@ You'll also need to [install `stack`](https://docs.haskellstack.org/en/stable/RE
 $ curl -sSL https://get.haskellstack.org/ | sh
 ```
 
-# Installing
+## Installing
 
 Clone this repo, then run
 
@@ -47,17 +47,17 @@ $ stack install
 
 If you already have the appropriate GHC version installed with stack you can skip `stack setup` step.
 
-# Running `musicd`
+## Running `musicd`
 
 Run
 ```
-musicd
+$ musicd
 ```
 in order to spawn an instance of `musicd`. It will automatically detach itself from your season and run as a daemon. (You can run it in the foreground with `--foreground` or `-f`.)
 
 A full list of options is available with `musicd --help`. The most important one is `--root`, with is the path to the root of where you keep your music. It defaults to `$HOME/Music`. `musicd` also takes a `--playlist` flag, which is a path to where it will look for a playlist relative to the music root, defaulting to `./playlist`.
 
-# Playlist format
+## Playlist format
 
 Each line can be one of the following:
   - A filepath (relative to the root) indications a song to play.

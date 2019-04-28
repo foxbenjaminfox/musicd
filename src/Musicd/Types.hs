@@ -19,7 +19,7 @@ data PlaySpec = File FilePath -- ^ A local file
               | None -- ^ Do nothing
   deriving (Eq, Show)
 
--- | `Status` represents whether `musicd` is
+-- | `Status` represents whether @musicd@ is
 -- playing a file (and if so which file), or
 -- is either paused or stopped.
 data Status = Playing Text | Paused | Stopped
@@ -31,7 +31,7 @@ data MusicFile = MusicFile {
   , path       :: FilePath
 } deriving (Eq, Show)
 
--- | The command line options passed to `musicd`.
+-- | The command line options passed to @musicd@.
 data Options = Options {
     foreground :: Bool
   , root       :: FilePath

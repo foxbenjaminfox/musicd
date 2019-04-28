@@ -5,7 +5,7 @@ module Musicd.Env (
 import           ClassyPrelude
 import           Musicd.Types (Status)
 
--- | `Env` holds `musicd`'s global state at runtime.
+-- | `Env` holds @musicd@'s global state at runtime.
 data Env = Env {
     playlistFile         :: FilePath
   , root                 :: FilePath

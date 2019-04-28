@@ -14,7 +14,7 @@ import           System.Process.Typed
 import           System.Random.Shuffle    (shuffleM)
 import qualified System.Remote.Monitoring as EKG
 
--- | Runs `musicd`'s main loop. See the <https://github.com/foxbenjaminfox/musicd/blob/master/README.md README> for details about how `musicd` works and what options it accepts.
+-- | Runs @musicd@'s main loop. See the <https://github.com/foxbenjaminfox/musicd/blob/master/README.md README> for details about how @musicd@ works and what options it accepts.
 run :: Options -> IO ()
 run opts = do
   let Options {..} = opts

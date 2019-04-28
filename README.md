@@ -68,3 +68,13 @@ Each line can be one of the following:
   - A `@`, followed by a youtube search term. `musicd` will play the top result for that search term from youtube. This functionality is still somewhat new, and will be refined more in the future.
   - A `-`, followed by a path to a file to include.
   - An empty line, at which `musicd` will pause in playing music.
+
+## Usage
+
+`musicd` is flexible, and doesn't demand that you use it with any particular workflow. That said, my workflow, which `musicd` was designed around is this:
+
+- A keybinding in my window manager, that opens a terminal window and opens in it the playlist file in vim.
+- Completion in vim with [depolete](https://github.com/Shougo/deoplete.nvim), which does (among other things) filename autocompletion, including fuzzy matching.
+- A simple (one-level) music directory layout, where I have a subdirectory for each group of music, arranged roughly by what I might want to play together.
+
+All this means that I can quickly open my playlist and easily queue up music, including using `musicd` features such as `=` and `?` in order to select some or all music of a particular type or genre, or by a particular singer or artist (depending on how exactly I chose to arrange those files.)

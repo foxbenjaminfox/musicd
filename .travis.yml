@@ -12,6 +12,12 @@ env:
 - ARGS="--resolver lts"
 - ARGS="--resolver nightly"
 
+matrix:
+  allow_failures:
+    - env: ARGS="--resolver lts"
+    - env: ARGS="--resolver nightly"
+  fast_finish: true
+
 before_install:
 # Download and unpack the stack executable
 - mkdir -p ~/.local/bin

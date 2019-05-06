@@ -78,3 +78,9 @@ Each line can be one of the following:
 - A simple (one-level) music directory layout, where I have a subdirectory for each group of music, arranged roughly by what I might want to play together.
 
 All this means that I can quickly open my playlist and easily queue up music, including using `musicd` features such as `=` and `?` in order to select some or all music of a particular type or genre, or by a particular singer or artist (depending on how exactly I chose to arrange those files.)
+
+### Play/pause
+
+`musicd` doesn't have it's own play/pause feature, because it doesn't need to. Instead, you can relay on Unix's _built-in_ play/pause support, via the SIGSTOP and SIGCONT signals.
+
+Send a `SIGSTOP` to `musicd`'s child `sox` process (via e.g. `pkill -stop play`) and it will pause. Send a `SIGCONT` (e.g. `pkill -cont play`) and the music will resume.

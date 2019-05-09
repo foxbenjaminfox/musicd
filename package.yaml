@@ -18,6 +18,7 @@ library:
   - ekg
   - filepath
   - Glob
+  - hinotify
   - megaparsec
   - monad-logger
   - random-shuffle

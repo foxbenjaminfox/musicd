@@ -10,6 +10,7 @@ import           Musicd.Types
 import           System.Directory         (XdgDirectory(..), getXdgDirectory)
 import           System.FilePath          (makeRelative)
 import qualified System.FilePath.Glob     as G
+import qualified System.INotify           as Notify
 import           System.Process.Typed
 import           System.Random.Shuffle    (shuffleM)
 import qualified System.Remote.Monitoring as EKG
@@ -34,10 +35,10 @@ getPlaylist Env {..} =
     [] -> do
       writeIORef status Stopped
       logInfoN "Waiting for playlist..."
-      waitForFileChange
+      waitForFileChange playlistFile
     playlist@(x:xs) ->
       readIORef status >>= \case
-        Paused | parse x == Pause -> waitForFileChange
+        Paused | parse x == Pause -> waitForFileChange playlistFile
         y | y == Playing x -> do
             writeFileUtf8 playlistFile $ unlines xs
             writeIORef status Stopped
@@ -45,8 +46,6 @@ getPlaylist Env {..} =
               expandPlaylist playlist Env {..}
               writeIORef status $ Playing x
               playItem x Env {..}
-  where
-    waitForFileChange = void $ runProcess (setWorkingDir root $ proc "inotifywait" ["-qq", playlistFile])
 
 expandPlaylist :: (MonadIO m, MonadLogger m) => [Text] -> Env -> m ()
 expandPlaylist playlist Env {..} = do
@@ -74,3 +73,13 @@ playItem x Env {..} = case parse x of
 
 playFile :: MonadIO m => MusicFile -> m ()
 playFile (MusicFile root file) = void $ runProcess (setWorkingDir root $ proc "play" [file])
+
+waitForFileChange :: MonadIO m => FilePath -> m ()
+waitForFileChange filename = liftIO . Notify.withINotify $ \notifier -> do
+  semaphore <- newEmptyMVar
+  void $
+    Notify.addWatch notifier
+      [Notify.AllEvents]
+      (encodeUtf8 . pack $ filename)
+      (const $ putMVar semaphore ())
+  takeMVar semaphore

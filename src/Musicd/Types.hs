@@ -27,8 +27,8 @@ data Status = Playing Text | Paused | Stopped
 
 -- | A file path relative to the music root.
 data MusicFile = MusicFile {
-    root       :: FilePath
-  , path       :: FilePath
+    root :: FilePath
+  , path :: FilePath
 } deriving (Eq, Show)
 
 -- | The command line options passed to @musicd@.

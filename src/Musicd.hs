@@ -4,9 +4,9 @@ module Musicd (
 
 import           ClassyPrelude
 import           Control.Monad.Logger
+import           Musicd.Env
 import           Musicd.Parse
 import           Musicd.Types
-import           Musicd.Env
 import           System.Directory         (XdgDirectory(..), getXdgDirectory)
 import           System.FilePath          (makeRelative)
 import qualified System.FilePath.Glob     as G

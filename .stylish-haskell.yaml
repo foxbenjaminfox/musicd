@@ -1,0 +1,24 @@
+steps:
+  - simple_align:
+      cases: true
+      top_level_patterns: true
+      records: true
+  - imports:
+      align: group
+      separate_lists: false
+
+  # Language pragmas
+  - language_pragmas:
+      style: compact
+      align: false
+
+columns: 80
+
+newline: lf
+
+language_extensions:
+  - DuplicateRecordFields
+  - LambdaCase
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - RecordWildCards

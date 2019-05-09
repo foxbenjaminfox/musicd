@@ -10,7 +10,7 @@ import Data.Char (isSpace)
 import Text.Read (read)
 
 import Data.Void            (Void)
-import Text.Megaparsec      hiding (many, some, parse)
+import Text.Megaparsec      hiding (many, parse, some)
 import Text.Megaparsec.Char
 
 type Parser = Parsec Void Text

@@ -38,19 +38,19 @@ spec =
     prop "starting with @" $ \term ->
       parse ("@" <> pack term) `shouldBe` YouTube term
     prop "starting with =" $ \(NonEmpty pat) ->
-      doesn'tStartWithSpace pat ==> parse ("=" <> pack pat) `shouldBe` Glob pat
+      doesNotStartWithSpace pat ==> parse ("=" <> pack pat) `shouldBe` Glob pat
     prop "starting with = with spaces" $ \(Positive num) (NonEmpty pat) ->
-      doesn'tStartWithSpace pat ==> parse ("=" <> replicate num ' ' <> pack pat) `shouldBe`
+      doesNotStartWithSpace pat ==> parse ("=" <> replicate num ' ' <> pack pat) `shouldBe`
       Glob pat
     prop "starting with -" $ \(NonEmpty pat) ->
-      doesn'tStartWithSpace pat ==> parse ("-" <> pack pat) `shouldBe`
+      doesNotStartWithSpace pat ==> parse ("-" <> pack pat) `shouldBe`
       UseList pat
     prop "starting with - with spaces" $ \(Positive num) (NonEmpty pat) ->
-      doesn'tStartWithSpace pat ==> parse ("-" <> replicate num ' ' <> pack pat) `shouldBe`
+      doesNotStartWithSpace pat ==> parse ("-" <> replicate num ' ' <> pack pat) `shouldBe`
       UseList pat
 
-doesn'tStartWithSpace :: String -> Bool
-doesn'tStartWithSpace str =
+doesNotStartWithSpace :: String -> Bool
+doesNotStartWithSpace str =
   case headMay str of
     Just x
       | isSpace x -> False

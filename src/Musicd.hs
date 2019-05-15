@@ -5,12 +5,12 @@ module Musicd (
 import           ClassyPrelude
 import           Control.Monad.Logger
 import           Musicd.Env
+import           Musicd.INotify
 import           Musicd.Parse
 import           Musicd.Types
 import           System.Directory         (XdgDirectory(..), getXdgDirectory)
 import           System.FilePath          (makeRelative)
 import qualified System.FilePath.Glob     as G
-import qualified System.INotify           as Notify
 import           System.Process.Typed
 import           System.Random.Shuffle    (shuffleM)
 import qualified System.Remote.Monitoring as EKG
@@ -72,16 +72,6 @@ playItem Env {..} x = case parse x of
 
 playFile :: MonadIO m => MusicFile -> m ()
 playFile (MusicFile root file) = void $ runProcess (setWorkingDir root $ proc "play" [file])
-
-waitForFileChange :: MonadIO m => FilePath -> m ()
-waitForFileChange filename = liftIO . Notify.withINotify $ \notifier -> do
-  semaphore <- newEmptyMVar
-  void $
-    Notify.addWatch notifier
-      [Notify.AllEvents]
-      (encodeUtf8 . pack $ filename)
-      (const $ putMVar semaphore ())
-  takeMVar semaphore
 
 playYoutube :: (MonadIO m, MonadLogger m) => FilePath -> String -> m ()
 playYoutube dir search = runProcess_ (setWorkingDir dir $ proc "youtube-dl" ["--extract-audio", "--audio-format", "mp3", "--exec", "play {}; rm {}", "ytsearch1:" <> search])

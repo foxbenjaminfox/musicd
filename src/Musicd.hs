@@ -45,7 +45,7 @@ getPlaylist Env {..} =
           | otherwise -> do
               expandPlaylist playlist Env {..}
               writeIORef status $ Playing x
-              playItem x Env {..}
+              playItem Env {..} x
 
 expandPlaylist :: (MonadIO m, MonadLogger m) => [Text] -> Env -> m ()
 expandPlaylist playlist Env {..} = do
@@ -61,13 +61,12 @@ expandPlaylist playlist Env {..} = do
       _ -> pure [line]
   writeFileUtf8 playlistFile (unlines . concat $ revised)
 
-playItem :: (MonadIO m, MonadLogger m) => Text -> Env -> m ()
-playItem x Env {..} = case parse x of
+playItem :: (MonadIO m, MonadLogger m) => Env -> Text -> m ()
+playItem Env {..} x = case parse x of
     File path -> do
       logInfoN $ "Playing file: " <> pack path
       playFile $ MusicFile root path
-    YouTube term ->
-      runProcess_ (setWorkingDir cacheDir $ proc "youtube-dl" ["--extract-audio", "--audio-format", "mp3", "--exec", "play {}; rm {}", "ytsearch1:" <> term])
+    YouTube searchTerm -> playYoutube cacheDir searchTerm
     Pause -> writeIORef status Paused
     _ -> pure ()
 
@@ -83,3 +82,6 @@ waitForFileChange filename = liftIO . Notify.withINotify $ \notifier -> do
       (encodeUtf8 . pack $ filename)
       (const $ putMVar semaphore ())
   takeMVar semaphore
+
+playYoutube :: (MonadIO m, MonadLogger m) => FilePath -> String -> m ()
+playYoutube dir search = runProcess_ (setWorkingDir dir $ proc "youtube-dl" ["--extract-audio", "--audio-format", "mp3", "--exec", "play {}; rm {}", "ytsearch1:" <> search])

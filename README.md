@@ -30,7 +30,9 @@ or dnf:
 # dnf install sox youtube-dl
 ```
 
-You'll also need to [install `stack`](https://docs.haskellstack.org/en/stable/README/#how-to-install) in order to compile `musicd`. You can do that with:
+You may also need to install `libsox-fmt-mp3` in order to be able to play mp3 files.
+
+In order to compile `musicd` you'll need to [install `stack`](https://docs.haskellstack.org/en/stable/README/#how-to-install). You can do that with:
 
 ```
 $ curl -sSL https://get.haskellstack.org/ | sh

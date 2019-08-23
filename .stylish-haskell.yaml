@@ -7,7 +7,6 @@ steps:
       align: group
       separate_lists: false
 
-  # Language pragmas
   - language_pragmas:
       style: compact
       align: false

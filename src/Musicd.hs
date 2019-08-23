@@ -8,7 +8,9 @@ import           Musicd.Env
 import           Musicd.INotify
 import           Musicd.Parse
 import           Musicd.Types
-import           System.Directory         (XdgDirectory(..), getXdgDirectory)
+import           System.Directory         (XdgDirectory(..),
+                                           createDirectoryIfMissing,
+                                           getXdgDirectory)
 import           System.FilePath          (makeRelative)
 import qualified System.FilePath.Glob     as G
 import           System.Process.Typed
@@ -66,7 +68,9 @@ playItem Env {..} x = case parse x of
     File path -> do
       logInfoN $ "Playing file: " <> pack path
       playFile $ MusicFile root path
-    YouTube searchTerm -> playYoutube cacheDir searchTerm
+    YouTube searchTerm -> do
+      liftIO $ createDirectoryIfMissing True cacheDir
+      playYoutube cacheDir searchTerm
     Pause -> writeIORef status Paused
     _ -> pure ()
 

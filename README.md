@@ -6,7 +6,7 @@
 
 The core idea of `musicd` is simple: you give it a file which is a queue of music to play, and `musicd` plays them, one after the other, in the background. Each line in your playlist file specifies one or more files to play, either directly by filename, or using any of `musicd`'s several specification options.
 
-Each line can specify either:
+Each line can specify one of the following:
 - A file to play.
 - A glob pattern of files to play.
 - A folder from which to randomly choose a given number of files to play.
@@ -30,7 +30,7 @@ or dnf:
 # dnf install sox youtube-dl
 ```
 
-You may also need to install `libsox-fmt-mp3` in order to be able to play mp3 files.
+On Ubuntu you may also need to install `libsox-fmt-mp3` in order to be able to play mp3 files.
 
 In order to compile `musicd` you'll need to [install `stack`](https://docs.haskellstack.org/en/stable/README/#how-to-install). You can do that with:
 
@@ -73,7 +73,7 @@ Each line can be one of the following:
 
 ## Usage
 
-`musicd` is flexible, and doesn't demand that you use it with any particular workflow. That said, my workflow, which `musicd` was designed around is this:
+`musicd` is flexible, and doesn't demand that you use it with any particular workflow. That said, my personal workflow—which `musicd` was designed around—goes something like this:
 
 - A keybinding in my window manager, that opens a terminal window and opens in it the playlist file in vim.
 - Completion in vim with [deoplete](https://github.com/Shougo/deoplete.nvim), which does (among other things) filename autocompletion, including fuzzy matching.

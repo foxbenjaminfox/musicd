@@ -50,7 +50,9 @@ dependencies:
 - classy-prelude
 default-extensions:
 - DuplicateRecordFields
+- FlexibleContexts
 - LambdaCase
+- NamedFieldPuns
 - NoImplicitPrelude
 - OverloadedStrings
 - RecordWildCards

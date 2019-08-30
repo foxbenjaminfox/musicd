@@ -17,7 +17,9 @@ newline: lf
 
 language_extensions:
   - DuplicateRecordFields
+  - FlexibleContexts
   - LambdaCase
+  - NamedFieldPuns
   - NoImplicitPrelude
   - OverloadedStrings
   - RecordWildCards

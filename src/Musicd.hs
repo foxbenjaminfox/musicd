@@ -29,10 +29,12 @@ run opts = do
   when ekgEnabled . void $ EKG.forkServer "localhost" 8888
 
   let runLogger = maybe runStderrLoggingT runFileLoggingT logFile
-  runLogger . forever $ getPlaylist Env {..}
 
-getPlaylist ::  (MonadIO m, MonadLogger m) =>Env -> m ()
-getPlaylist Env {..} =
+  runLogger . runWithEnv Env {..} . forever $ getPlaylist
+
+getPlaylist ::  (MonadReader Env m, MonadIO m, MonadLogger m) => m ()
+getPlaylist = do
+  Env { playlistFile, status } <- ask
   lines <$> readFileUtf8 playlistFile >>= \case
     [] -> do
       writeIORef status Stopped
@@ -45,12 +47,13 @@ getPlaylist Env {..} =
             writeFileUtf8 playlistFile $ unlines xs
             writeIORef status Stopped
           | otherwise -> do
-              expandPlaylist playlist Env {..}
+              expandPlaylist playlist
               writeIORef status $ Playing x
-              playItem Env {..} x
+              playItem x
 
-expandPlaylist :: (MonadIO m, MonadLogger m) => [Text] -> Env -> m ()
-expandPlaylist playlist Env {..} = do
+expandPlaylist :: (MonadReader Env m, MonadIO m, MonadLogger m) => [Text] -> m ()
+expandPlaylist playlist = do
+  Env { playlistFile, root } <- ask
   revised <- forM (zip [0::Int ..] playlist) $ \(idx, line) ->
     case parse line of
       Random num path -> do
@@ -67,15 +70,18 @@ expandPlaylist playlist Env {..} = do
       _ -> pure [line]
   writeFileUtf8 playlistFile (unlines . concat $ revised)
 
-playItem :: (MonadIO m, MonadLogger m) => Env -> Text -> m ()
-playItem Env {..} x = case parse x of
+playItem :: (MonadReader Env m, MonadIO m, MonadLogger m) => Text -> m ()
+playItem x = case parse x of
     File path -> do
       logInfoN $ "Playing file: " <> pack path
-      playFile $ MusicFile root path
+      playFile =<< musicAt path
     YouTube searchTerm -> do
+      cacheDir <- asks cacheDir
       createDir cacheDir
       playYoutube cacheDir searchTerm
-    Pause -> writeIORef status Paused
+    Pause -> do
+      status <- asks status
+      writeIORef status Paused
     _ -> pure ()
 
 playFile :: MonadIO m => MusicFile -> m ()

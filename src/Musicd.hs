@@ -54,9 +54,11 @@ expandPlaylist playlist Env {..} = do
   revised <- forM (zip [0::Int ..] playlist) $ \(idx, line) ->
     case parse line of
       Random num path -> do
+        logInfoN $ "Selecting " <> pack (show num) <> " random files from \"" <> pack path <> "\"."
         out <- liftIO . shuffleM =<< lines <$> readProcess (proc "find" ["-L", root </> path, "-type", "f"])
         pure . take num . map (pack . makeRelative root . unpack) $ out
-      Glob pat ->
+      Glob pat -> do
+        logInfoN $ "Expanding glob \"" <> pack pat <> "\"."
         sort . fmap (pack . makeRelative root) <$> liftIO (G.globDir1 (G.compile pat) root)
       Stream path | idx == 0 ->
         pure ["?" <> pack path, line]
@@ -80,7 +82,9 @@ playFile :: MonadIO m => MusicFile -> m ()
 playFile (MusicFile root file) = runProcessIn root $ proc "play" [file]
 
 playYoutube :: (MonadIO m, MonadLogger m) => FilePath -> String -> m ()
-playYoutube dir search = runProcessIn dir $
+playYoutube dir search = do
+  logInfoN $ "Searching \"" <> pack search <> "\" on YouTube."
+  runProcessIn dir $
     proc "youtube-dl" ["--extract-audio", "--audio-format", "mp3", "--exec", "play {}; rm {}", "ytsearch1:" <> search]
 
 createDir :: MonadIO m => FilePath -> m ()

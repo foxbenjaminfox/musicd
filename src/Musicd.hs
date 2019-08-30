@@ -7,13 +7,13 @@ import           Control.Monad.Logger
 import           Musicd.Env
 import           Musicd.INotify
 import           Musicd.Parse
+import           Musicd.Subprocess
 import           Musicd.Types
 import           System.Directory         (XdgDirectory(..),
                                            createDirectoryIfMissing,
                                            getXdgDirectory)
 import           System.FilePath          (makeRelative)
 import qualified System.FilePath.Glob     as G
-import           System.Process.Typed
 import           System.Random.Shuffle    (shuffleM)
 import qualified System.Remote.Monitoring as EKG
 
@@ -54,12 +54,14 @@ expandPlaylist playlist Env {..} = do
   revised <- forM (zip [0::Int ..] playlist) $ \(idx, line) ->
     case parse line of
       Random num path -> do
-        out <- liftIO . shuffleM =<< lines . decodeUtf8 . toStrict <$> readProcessStdout_ (proc "find" ["-L", root </> path, "-type", "f"])
+        out <- liftIO . shuffleM =<< lines <$> readProcess (proc "find" ["-L", root </> path, "-type", "f"])
         pure . take num . map (pack . makeRelative root . unpack) $ out
       Glob pat ->
         sort . fmap (pack . makeRelative root) <$> liftIO (G.globDir1 (G.compile pat) root)
-      Stream path | idx == 0 -> pure ["?" <> pack path, line]
-      UseList path -> lines <$> readFileUtf8 (root </> path)
+      Stream path | idx == 0 ->
+        pure ["?" <> pack path, line]
+      UseList path ->
+        lines <$> readFileUtf8 (root </> path)
       _ -> pure [line]
   writeFileUtf8 playlistFile (unlines . concat $ revised)
 
@@ -69,13 +71,17 @@ playItem Env {..} x = case parse x of
       logInfoN $ "Playing file: " <> pack path
       playFile $ MusicFile root path
     YouTube searchTerm -> do
-      liftIO $ createDirectoryIfMissing True cacheDir
+      createDir cacheDir
       playYoutube cacheDir searchTerm
     Pause -> writeIORef status Paused
     _ -> pure ()
 
 playFile :: MonadIO m => MusicFile -> m ()
-playFile (MusicFile root file) = void $ runProcess (setWorkingDir root $ proc "play" [file])
+playFile (MusicFile root file) = runProcessIn root $ proc "play" [file]
 
 playYoutube :: (MonadIO m, MonadLogger m) => FilePath -> String -> m ()
-playYoutube dir search = runProcess_ (setWorkingDir dir $ proc "youtube-dl" ["--extract-audio", "--audio-format", "mp3", "--exec", "play {}; rm {}", "ytsearch1:" <> search])
+playYoutube dir search = runProcessIn dir $
+    proc "youtube-dl" ["--extract-audio", "--audio-format", "mp3", "--exec", "play {}; rm {}", "ytsearch1:" <> search]
+
+createDir :: MonadIO m => FilePath -> m ()
+createDir = liftIO . createDirectoryIfMissing True

@@ -9,12 +9,9 @@ import           Musicd.INotify
 import           Musicd.Parse
 import           Musicd.Subprocess
 import           Musicd.Types
-import           System.Directory         (XdgDirectory(..),
-                                           createDirectoryIfMissing,
-                                           getXdgDirectory)
+import           Musicd.Util
+import           System.Directory         (XdgDirectory(..), getXdgDirectory)
 import           System.FilePath          (makeRelative)
-import qualified System.FilePath.Glob     as G
-import           System.Random.Shuffle    (shuffleM)
 import qualified System.Remote.Monitoring as EKG
 
 -- | Runs @musicd@'s main loop. See the <https://github.com/foxbenjaminfox/musicd/blob/master/README.md README> for details about how @musicd@ works and what options it accepts.
@@ -54,15 +51,14 @@ getPlaylist = do
 expandPlaylist :: (MonadReader Env m, MonadIO m, MonadLogger m) => [Text] -> m ()
 expandPlaylist playlist = do
   Env { playlistFile, root } <- ask
-  revised <- forM (zip [0::Int ..] playlist) $ \(idx, line) ->
+  revised <- iforM playlist $ \(idx, line) ->
     case parse line of
       Random num path -> do
         logInfoN $ "Selecting " <> pack (show num) <> " random files from \"" <> pack path <> "\"."
-        out <- liftIO . shuffleM =<< lines <$> readProcess (proc "find" ["-L", root </> path, "-type", "f"])
-        pure . take num . map (pack . makeRelative root . unpack) $ out
+        expandRandom num path root
       Glob pat -> do
         logInfoN $ "Expanding glob \"" <> pack pat <> "\"."
-        sort . fmap (pack . makeRelative root) <$> liftIO (G.globDir1 (G.compile pat) root)
+        sort . fmap (pack . makeRelative root) <$> globIn pat root
       Stream path | idx == 0 ->
         pure ["?" <> pack path, line]
       UseList path ->
@@ -85,13 +81,19 @@ playItem x = case parse x of
     _ -> pure ()
 
 playFile :: MonadIO m => MusicFile -> m ()
-playFile (MusicFile root file) = runProcessIn root $ proc "play" [file]
+playFile (MusicFile root file) = void . runProcessIn root $ proc "play" [file]
 
 playYoutube :: (MonadIO m, MonadLogger m) => FilePath -> String -> m ()
 playYoutube dir search = do
   logInfoN $ "Searching \"" <> pack search <> "\" on YouTube."
-  runProcessIn dir $
+  void . runProcessIn dir $
     proc "youtube-dl" ["--extract-audio", "--audio-format", "mp3", "--exec", "play {}; rm {}", "ytsearch1:" <> search]
 
-createDir :: MonadIO m => FilePath -> m ()
-createDir = liftIO . createDirectoryIfMissing True
+findFilesIn :: MonadIO m => FilePath -> m [Text]
+findFilesIn path = lines <$> readProcess (proc "find" ["-L", path, "-type", "f"])
+
+expandRandom :: MonadIO m => Int -> FilePath -> FilePath -> m [Text]
+expandRandom num path root = do
+  files <- findFilesIn (root </> path) >>= shuffle
+  let relativeFiles = map (pack . makeRelative root . unpack) files
+  pure . take num $ relativeFiles

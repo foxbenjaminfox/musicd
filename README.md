@@ -85,7 +85,7 @@ All this means that I can quickly open my playlist and easily queue up music, in
 
 `musicd` doesn't have it's own play/pause feature, because it doesn't need to. Instead, you can relay on Unix's _built-in_ play/pause support, via the SIGSTOP and SIGCONT signals.
 
-Send a `SIGSTOP` to `musicd`'s child `sox` process (via e.g. `pkill -stop play`) and it will pause. Send a `SIGCONT` (e.g. `pkill -cont play`) and the music will resume.
+Send a `SIGSTOP` to `musicd`'s child `sox` process (via e.g. `pkill -s stop play`) and it will pause. Send a `SIGCONT` (e.g. `pkill -s cont play`) and the music will resume.
 
 My preferred way of managing this is to bind a keybinding my window manager to send the appropriate signal to toggle the current song between playing and being paused.
 

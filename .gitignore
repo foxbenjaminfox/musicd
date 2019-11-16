@@ -1,6 +1,5 @@
-musicd.cabal
-tags
-/dist/
 /.cabal-sandbox/
 /cabal.sandbox.config
+/dist/
+musicd.cabal
 /.stack-work/

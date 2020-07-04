@@ -1,5 +1,7 @@
 # `musicd` - the music daemon
 
+[![Build Status](https://travis-ci.org/foxbenjaminfox/musicd.png)](https://travis-ci.org/foxbenjaminfox/musicd)
+
 `musicd` is a daemon for playing music, intended to serve as a replacement for GUI music players.
 
 The core idea of `musicd` is simple: you give it a file which is a queue of music to play, and `musicd` plays them, one after the other, in the background. Each line in your playlist file specifies one or more files to play, either directly by filename, or using any of `musicd`'s several specification options.
@@ -12,7 +14,7 @@ Each line can specify one of the following:
 - A YouTube search term.
 - Another playlist file to include.
 
-To play music: open your playlist in your favorite editor and queue up what you want to play. `musicd` works best if you have your music arranged in a filesystem hierarchy which matches how you want to organize your music.
+To play music, open your playlist in your favorite editor and queue up what you want to play. `musicd` works best if you have your music arranged in a filesystem hierarchy which matches how you want to organize your music.
 
 ## Dependencies
 
@@ -73,19 +75,19 @@ Each line can be one of the following:
 
 `musicd` is flexible, and doesn't demand that you use it with any particular workflow. That said, my personal workflow—which `musicd` was designed around—goes something like this:
 
-- A keybinding in my window manager, that opens a terminal window and opens in it the playlist file in vim.
+- A keybinding in my window manager, which pops up a terminal window in which the playlist file is open in (neo)vim.
 - Completion in vim with [deoplete](https://github.com/Shougo/deoplete.nvim), which does (among other things) filename autocompletion, including fuzzy matching.
 - A simple (one-level) music directory layout, which has a subdirectory for each group of music arranged roughly by what I might want to play together.
 
-All this means that I can quickly open my playlist and easily queue up music, including using `musicd` features such as `=` and `?` in order to select some or all music of a particular type or genre, or by a particular singer or artist (depending on how exactly I chose to arrange those files.)
+All this means that I can quickly open my playlist and easily queue up music, including using `musicd` features such as `=` and `?` in order to select some or all music of a particular type or genre, or by a particular singer or artist (depending on how exactly I choose to arrange the files.)
 
 ### Play/pause
 
-`musicd` doesn't have it's own play/pause feature, because it doesn't need to. Instead, you can relay on Unix's _built-in_ play/pause support, via the SIGSTOP and SIGCONT signals.
+`musicd` doesn't have it's own play/pause feature, because it doesn't need to. Instead, you can rely on Unix's _built-in_ play/pause support, via the SIGSTOP and SIGCONT signals.
 
 Send a `SIGSTOP` to `musicd`'s child `sox` process (via e.g. `pkill -s stop play`) and it will pause. Send a `SIGCONT` (e.g. `pkill -s cont play`) and the music will resume.
 
-My preferred way of managing this is to bind a keybinding my window manager to send the appropriate signal to toggle the current song between playing and being paused.
+My preferred way of managing this is to bind a keybinding my window manager to send the appropriate signal to toggle the current song between playing and being paused. Similarly, I also have another keybinding set up to send a `SIGTERM` to the `sox` subprocess, which I can use to skip the current track.
 
 ## Limitations
 

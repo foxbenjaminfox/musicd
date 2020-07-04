@@ -63,7 +63,7 @@ Each line can be one of the following:
   - A file path (relative to the root) indicates a song to play.
   - A `?`, followed by a path to a directory (again, relative to the root), indicates a folder to play a random song from.
   - A `?`, followed by a number, then another `?` and then a path to a directory, indicating a number of random songs to play from that directory.
-  - `??`, followed by a directory, from which `musicd` will play random songs indefinably.
+  - `??`, followed by a directory, from which `musicd` will play random songs indefinitely.
   - A `=`, followed by a glob pattern, which will be expanded by `musicd` into a list of songs to play.
   - A `@`, followed by a youtube search term. `musicd` will play the top result for that search term from youtube. This functionality is still somewhat new, and will be refined more in the future.
   - A `-`, followed by a path to another playlist file, whose contents will be inserted in place of the line.
